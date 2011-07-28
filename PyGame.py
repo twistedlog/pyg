@@ -28,6 +28,7 @@ class PyManMain:
 		if event.type == pygame.QUIT:
 		    sys.exit()
 
+	    self.pellet_sprites.draw(self.screen)
 	    self.snake_sprites.draw(self.screen)
 	    pygame.display.flip()
 
@@ -35,6 +36,16 @@ class PyManMain:
 	""" Load the sprite we need"""
 	self.snake = Snake()
 	self.snake_sprites = pygame.sprite.RenderPlain((self.snake))
+	"""figure out how many pellets we can display"""
+	nNumHorizontal = int(self.width/64)
+	nNumVertical = int(self.height/64)
+	"""Create the pellet group"""
+	self.pellet_sprites = pygame.sprite.Group()
+	"""Create all the palletes and add them to the pallet_sprites group"""
+	for x in range(nNumHorizontal):
+	    for y in range(nNumVertical):
+	        self.pellet_sprites.add(Pellet(pygame.Rect(x*64,y*64,64,64)))
+
 class Snake(pygame.sprite.Sprite):
     """This is out snake that will be moved around the screen"""
     
@@ -42,6 +53,14 @@ class Snake(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
 	self.image,self.rect=load_image('snake.png',-1)
 	self.pellets =0
+
+class Pellet(pygame.sprite.Sprite):
+
+    def __init__(self,rect=None):
+	pygame.sprite.Sprite.__init__(self)
+	self.image,self.rect = load_image('pellet.png',-1)
+	if rect !=None:
+	    self.rect = rect
 
 if __name__ == "__main__":
     MainWindow = PyManMain()
