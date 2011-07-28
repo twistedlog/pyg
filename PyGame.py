@@ -23,15 +23,36 @@ class PyManMain:
 	"""This is the Main Loop of the game"""
 	"""Load All of our sprites"""
 	self.LoadSprites()
+	pygame.key.set_repeat(500,30)
+	
+	self.background = pygame.Surface(self.screen.get_size())
+	self.background = self.background.convert()
+	self.background.fill((0,0,0))
 	while 1:
 	    for event in pygame.event.get():
 		if event.type == pygame.QUIT:
 		    sys.exit()
+		elif event.type == KEYDOWN:
+		    if ((event.key == K_RIGHT)
+		    or (event.key == K_LEFT)
+  		    or (event.key == K_UP)
+		    or (event.key == K_DOWN)):
+			self.snake.move(event.key)
 
+	    lstCols = pygame.sprite.spritecollide(self.snake,self.pellet_sprites,True)
+	    self.snake.pellets = self.snake.pellets + len(lstCols)
+	    self.screen.blit(self.background,(0,0))
+	    if pygame.font:
+		font = pygame.font.Font(None,36)
+		text = font.render("Pellets %s" % self.snake.pellets,1,(255,0,0))
+		textpos = text.get_rect(centerx=self.background.get_width()/2)
+		self.screen.blit(text,textpos)
+		
 	    self.pellet_sprites.draw(self.screen)
 	    self.snake_sprites.draw(self.screen)
 	    pygame.display.flip()
 
+    
     def LoadSprites(self):
 	""" Load the sprite we need"""
 	self.snake = Snake()
@@ -53,7 +74,20 @@ class Snake(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
 	self.image,self.rect=load_image('snake.png',-1)
 	self.pellets =0
-
+	self.x_dist = 5
+	self.y_dist = 5
+    def move(self,key):
+	xMove=0
+	yMove=0
+	if(key ==K_RIGHT):	
+	    xMove = self.x_dist
+	elif(key == K_LEFT):
+	    xMove = -self.x_dist
+	elif (key==K_UP):
+	    yMove = -self.y_dist
+	elif(key == K_DOWN):
+	    yMove = self.y_dist
+	self.rect.move_ip(xMove,yMove)	
 class Pellet(pygame.sprite.Sprite):
 
     def __init__(self,rect=None):
